@@ -1,0 +1,89 @@
+//Declarative pipeline-script
+pipeline{
+  /*agent{
+    label 'slave1' or 
+    label 'master' or 
+    label 'ansiblenode'
+    Depending on where you want to build from.
+    Or you can just do "agent any" and leave it alone 
+  }
+  */
+  agent any
+  tools{
+    Maven 'maven3.9.6'
+    //git 'git-version'
+    //node 'node-version'
+  }
+  options{}
+  triggers{}
+  stages{
+    //You may use an agent for each stage depending on your project/cpy
+    stage('1.CloneCode'){
+      steps{
+        sh 'echo Cloning Latest Application version'
+        git 'https://github.com/Landmarkttech/java-web-app'
+        sh 'echo Cloning successful'
+      }
+    }
+    stage('2.MavenBuild'){
+      steps{
+        sh "Building artifacts"
+        sh "mvn install"
+        sh "Build sucessfull"
+      }
+    }
+    stage('3.CodeQuality'){
+      steps{
+        sh "Executing Code Quality analysis"
+        sh "mvn sonar:sonar"
+        sh "Quality checks successful"
+      }
+    }
+    stage('4.Backup/Upload'){
+      steps{
+        sh "Uploading Artifacts to Nexus"
+        sh "mvn deploy"
+        sh "Nexus upload successful"
+      }
+    }
+    stage('5.Deploy2UAT'){
+      steps{
+        sh "Application ready for client review"
+        ==>enter pipeline-script here
+        sh "UAT testing successful"
+        //make sure tomcat is running
+        //create a pipeline syntaxfor UAT Deployment
+         
+      }
+    }
+    stage('6.ManualApproval'){
+      steps{
+        sh "Application is ready pls review and approve"
+        timeout(time: 300, unit: 'MINUTES')
+        {
+          inpte message: 'Application ready for Prod Deployment. Please review and approve'
+        }
+      }
+    }
+    stage('7.Deploy2Prod'){
+      sh "Deploying Application to Prod"
+      ==>enter pipeline-script here
+      sh "Application reviewed, approved and ready for the market"
+      sh "Prod Deployment successful"
+    }
+    //stage('8.Notifications'){} 
+    //Instead of Notifications we post messages
+  }
+  post{
+    Depending omn the outcome
+    //Build success{
+    ==>create a pipeline syntax
+    }
+    //Build failure{
+    ==>create a pipeline syntax
+    }
+    //Always{
+    ==>create a pipeline syntax
+    }
+  }
+}
